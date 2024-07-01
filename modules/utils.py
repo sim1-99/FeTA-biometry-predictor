@@ -90,3 +90,5 @@ def impute_missing_values(
         print("Imputation completed.")
     else:
         print("No missing values found.")
+
+    return df
