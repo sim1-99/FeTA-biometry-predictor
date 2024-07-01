@@ -7,7 +7,7 @@ Date: 2024-06-28
 This script runs the pipeline of FeTA-biometry-predictor.
 
 Starting from the segmentations of 7 labels in MRI T2w fetal brain images, it
-predicts 5 biometric measures.
+predicts 5 biometric measurements.
 
 The seven input labels required as input are:
 1. cerebrospinal fluid (CSF)
@@ -18,7 +18,7 @@ The seven input labels required as input are:
 6. subcortical gray matter (SGM)
 7. brainstem (BS)
 
-The five predicted biometric measures are:
+The five predicted biometric measurements are:
 1) brain biparietal diameter (bBIP)
 2) skull biparietal diameter (sBIP)
 3) transverse cerebellar diameter (TCD)
@@ -35,21 +35,24 @@ from modules.utils import (
     load_meas,
 )
 
-# load data
-test_mask = load_image("~/sub-001_rec-mial_dseg.nii.gz")
-meas_gt = load_meas("~/biometry.tsv")
 
-# predict
-ax_meas = ax_meas_pred(test_mask)
-TCD_pred = cor_meas_pred(test_mask)
-sag_meas = sag_meas_pred(test_mask)
+def main():
+    """Run the pipeline."""
 
-bBip_pred = ax_meas[0]
-sBip_pred = ax_meas[1]
-HV_pred = sag_meas[0]
-LCC_pred = sag_meas[1]
+    # Load data
+    test_mask = load_image("~/sub-001_rec-mial_dseg.nii.gz")
+    meas_gt = load_meas("~/biometry.tsv")
 
-meas_preds = [bBip_pred, sBip_pred, TCD_pred, HV_pred, LCC_pred]
+    # Predict
+    bBip_pred, sBip_pred = ax_meas_pred(test_mask)
+    TCD_pred = cor_meas_pred(test_mask)
+    HV_pred, LCC_pred = sag_meas_pred(test_mask)
 
-#evaluate
-evaluate(meas_preds, meas_gt)
+    meas_preds = [bBip_pred, sBip_pred, TCD_pred, HV_pred, LCC_pred]
+
+    # Evaluate
+    evaluate.main(meas_gt, meas_preds, "~/biometry_pred_results.txt")
+
+
+if __name__ == "__main__":
+    main()
